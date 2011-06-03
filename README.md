@@ -47,21 +47,24 @@ Here's a rudimentary example that inspects and compares trees marshaled from the
 %% Shows example usage on marshaled binary from the jmerkle_sequential example.
 demo() ->
     
-    % the following file:read_file/1 operations assume java.io.tmpdir was simply "/tmp":
+	% the following file:read_file/1 operations assume java.io.tmpdir was simply "/tmp":
     {ok, InitialInventoryTree} = file:read_file("/tmp/InitialInventoryTree.out"),
-    io:format("InitialInventoryTree: ~p~n", [InitialInventoryTree]),
+	io:format("InitialInventoryTree: ~p~n", [InitialInventoryTree]),
+	
+    % execute "allkeys" on the binary InitialInventoryTree:
+	InitialInventoryKeys = merkle_parser:allkeys(InitialInventoryTree),
+	io:format("InitialInventoryKeys: ~p~n", [InitialInventoryKeys]),
+	
+	{ok, AlteredInventoryTree} = file:read_file("/tmp/AlteredInventoryTree.out"),
+	io:format("AlteredInventoryTree: ~p~n", [AlteredInventoryTree]),
+	
+    % execute "allkeys" on the binary AlteredInventoryTree:
+	AlteredInventoryKeys = merkle_parser:allkeys(AlteredInventoryTree),
+	io:format("AlteredInventoryKeys: ~p~n", [AlteredInventoryKeys]),
 
-    InitialInventoryKeys = merkle_parser:allkeys(InitialInventoryTree),
-    io:format("InitialInventoryKeys: ~p~n", [InitialInventoryKeys]),
-
-    {ok, AlteredInventoryTree} = file:read_file("/tmp/AlteredInventoryTree.out"),
-    io:format("AlteredInventoryTree: ~p~n", [AlteredInventoryTree]),
-
-    AlteredInventoryKeys = merkle_parser:allkeys(AlteredInventoryTree),
-    io:format("AlteredInventoryKeys: ~p~n", [AlteredInventoryKeys]),
-
+    % execute "diff" between the two binary Merkle trees:
     Diff = merkle_parser:diff(InitialInventoryTree, AlteredInventoryTree),
-    io:format("Diff: ~p~n", [Diff]),
+	io:format("Diff: ~p~n", [Diff]),
 
     ok.
 ```
@@ -102,3 +105,7 @@ AlteredInventoryKeys: [<<"brand new!">>,<<"widget2">>,<<"widget1">>,
 Diff: [<<"brand new!">>,<<"widget4">>,<<"widget2">>]
 ok
 ```
+
+As you can see, the output is functionally equivalent to the 
+<a href="https://github.com/andrewoswald/jmerkle_sequential" target="_blank">jmerkle_sequential</a> 
+sample output.
